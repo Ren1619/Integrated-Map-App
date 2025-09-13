@@ -14,7 +14,7 @@
             <button class="btn-primary" onclick="app.searchLocation()">🔍 Search</button>
         </div>
         <div class="flex gap-2">
-            <button class="btn-primary active:bg-blue-700" id="standardBtn" onclick="app.changeMapLayer('standard')">🗺️
+            <button class="btn-primary active" id="standardBtn" onclick="app.changeMapLayer('standard')">🗺️
                 Standard</button>
             <button class="btn-primary" id="cycleBtn" onclick="app.changeMapLayer('cycle')">🚲
                 Cycle</button>
@@ -23,12 +23,14 @@
         </div>
     </div>
 
-    <div class="flex flex-1 h-[calc(100vh-200px)] gap-4 p-4 flex-col lg:flex-row">
+    <div class="flex flex-1 gap-4 p-4 flex-col lg:flex-row" style="height: calc(100vh - 200px);">
         <!-- Map -->
-        <div id="map" class="flex-2 lg:flex-[2] rounded-2xl shadow-2xl border-4 border-white/30 h-96 lg:h-auto"></div>
+        <div class="flex-2 lg:flex-[2] rounded-2xl shadow-2xl border-4 border-white/30 overflow-hidden">
+            <div id="map" class="w-full h-full"></div>
+        </div>
 
         <!-- Information Panel -->
-        <div class="flex-1 flex flex-col lg:flex-col md:flex-row gap-4">
+        <div class="flex-1 flex flex-col gap-4">
             <!-- Weather Section -->
             <div class="glass-effect rounded-2xl p-6 shadow-2xl border-4 border-white/30 flex-1 overflow-y-auto">
                 <div class="text-xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-blue-500">Location Weather
@@ -40,6 +42,7 @@
                     </div>
                 </div>
             </div>
+
             <!-- Point of Interest Section -->
             <div class="glass-effect rounded-2xl p-6 shadow-2xl border-4 border-white/30 flex-1 overflow-y-auto">
                 <div class="text-xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-blue-500">
@@ -127,12 +130,10 @@
             }
 
             setActiveLayerButton(layerType) {
-                document.querySelectorAll('.btn-primary').forEach(btn => {
-                    btn.classList.remove('bg-blue-700');
-                    btn.classList.add('text-blue-500');
+                document.querySelectorAll('#standardBtn, #cycleBtn, #transportBtn').forEach(btn => {
+                    btn.classList.remove('active');
                 });
-                document.getElementById(layerType + 'Btn').classList.add('bg-blue-700');
-                document.getElementById(layerType + 'Btn').classList.remove('text-blue-500');
+                document.getElementById(layerType + 'Btn').classList.add('active');
             }
 
             async searchLocation() {
@@ -257,7 +258,7 @@
                     .sort((a, b) => a.distance - b.distance)
                     .slice(0, 15);
 
-                let html = '<div class="max-h-80 overflow-y-auto space-y-2">';
+                let html = '<div class="space-y-2">';
 
                 poisWithDistance.forEach(poi => {
                     const name = poi.tags.name || poi.tags.amenity || poi.tags.shop || poi.tags.tourism || 'Unnamed';
@@ -389,38 +390,38 @@
                 const weatherIcon = this.getWeatherIcon(current.weathercode, current.is_day);
 
                 weatherInfo.innerHTML = `
-                    <div class="text-lg font-semibold text-gray-800 mb-4">${locationName}</div>
+                        <div class="text-lg font-semibold text-gray-800 mb-4">${locationName}</div>
 
-                    <div class="text-5xl mb-4">${weatherIcon}</div>
+                        <div class="text-5xl mb-4">${weatherIcon}</div>
 
-                    <div class="text-4xl font-bold text-blue-500 mb-4">${Math.round(current.temperature)}°C</div>
+                        <div class="text-4xl font-bold text-blue-500 mb-4">${Math.round(current.temperature)}°C</div>
 
-                    <div class="grid grid-cols-2 gap-3 mb-4">
-                        <div class="bg-blue-50 p-3 rounded-lg text-center">
-                            <div class="text-xs text-gray-600 mb-1">💧 Humidity</div>
-                            <div class="text-lg font-bold text-gray-800">${humidity}%</div>
+                        <div class="grid grid-cols-2 gap-3 mb-4">
+                            <div class="bg-blue-50 p-3 rounded-lg text-center">
+                                <div class="text-xs text-gray-600 mb-1">💧 Humidity</div>
+                                <div class="text-lg font-bold text-gray-800">${humidity}%</div>
+                            </div>
+
+                            <div class="bg-blue-50 p-3 rounded-lg text-center">
+                                <div class="text-xs text-gray-600 mb-1">💨 Wind</div>
+                                <div class="text-lg font-bold text-gray-800">${Math.round(current.windspeed)} km/h</div>
+                            </div>
+
+                            <div class="bg-blue-50 p-3 rounded-lg text-center">
+                                <div class="text-xs text-gray-600 mb-1">🧭 Direction</div>
+                                <div class="text-lg font-bold text-gray-800">${current.winddirection}°</div>
+                            </div>
+
+                            <div class="bg-blue-50 p-3 rounded-lg text-center">
+                                <div class="text-xs text-gray-600 mb-1">🌡️ Temp</div>
+                                <div class="text-lg font-bold text-gray-800">${Math.round(current.temperature)}°C</div>
+                            </div>
                         </div>
 
-                        <div class="bg-blue-50 p-3 rounded-lg text-center">
-                            <div class="text-xs text-gray-600 mb-1">💨 Wind</div>
-                            <div class="text-lg font-bold text-gray-800">${Math.round(current.windspeed)} km/h</div>
+                        <div class="text-xs text-gray-500 text-center mt-4">
+                            📅 ${new Date().toLocaleString()}
                         </div>
-
-                        <div class="bg-blue-50 p-3 rounded-lg text-center">
-                            <div class="text-xs text-gray-600 mb-1">🧭 Direction</div>
-                            <div class="text-lg font-bold text-gray-800">${current.winddirection}°</div>
-                        </div>
-
-                        <div class="bg-blue-50 p-3 rounded-lg text-center">
-                            <div class="text-xs text-gray-600 mb-1">🌡️ Temp</div>
-                            <div class="text-lg font-bold text-gray-800">${Math.round(current.temperature)}°C</div>
-                        </div>
-                    </div>
-
-                    <div class="text-xs text-gray-500 text-center mt-4">
-                        📅 ${new Date().toLocaleString()}
-                    </div>
-                `;
+                    `;
             }
         }
 
